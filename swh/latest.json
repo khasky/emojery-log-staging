@@ -1,11 +1,11 @@
 {
   "origin": "https://github.com/khasky/web-reactions-log-staging",
-  "git_commit": "82b7ee312597c7895691bd4582d2cbc1160f005e",
-  "swhid": "swh:1:rev:82b7ee312597c7895691bd4582d2cbc1160f005e",
-  "revision_url": "https://archive.softwareheritage.org/api/1/revision/82b7ee312597c7895691bd4582d2cbc1160f005e/",
-  "save_request_id": 2400313,
+  "git_commit": "000a2faf06563ccac427117e35c162d6d6a42ceb",
+  "swhid": "swh:1:rev:000a2faf06563ccac427117e35c162d6d6a42ceb",
+  "revision_url": "https://archive.softwareheritage.org/api/1/revision/000a2faf06563ccac427117e35c162d6d6a42ceb/",
+  "save_request_id": 2400781,
   "save_request_status": "accepted",
   "save_task_status": "pending",
   "snapshot_swhid": null,
-  "requested_ts": 1785122268732
+  "requested_ts": 1785208645977
 }
