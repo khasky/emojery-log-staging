@@ -142,27 +142,41 @@ so a just-published coordinate resolves once SWH completes the visit — the sam
 
 ## Reading the commit history
 
-Every commit here is made by the anchoring bot. The message says what it did:
+Every commit here is made by the anchoring bot. The emoji prefix says which
+stage of the pipeline the commit belongs to, so a glance down the history
+separates proofs still waiting on Bitcoin (⏳) from proofs already anchored (⚓):
+
+| Prefix | Stage |
+| --- | --- |
+| 🌱 | raw leaves appended |
+| 🔏 | signed artifact published |
+| 🧭 | a pointer file moved |
+| ⏳ | timestamp proof requested, not yet confirmed |
+| ⚓ | timestamp proof confirmed |
+| 📚 | third-party mirror refreshed |
+
+The text after the prefix says what it did:
 
 | Commit message | File written | What it means |
 | --- | --- | --- |
-| `add checkpoint 766` | `checkpoints/<YYYY-MM-DD>.ndjson` | a new Ed25519-signed tree head (STH) for `tree_size` 766 was appended — the substantive "a checkpoint was published" event |
-| `update latest 766` | `checkpoints/latest.json` | the pointer to the newest checkpoint moved to 766 (the file the verifier reads) |
-| `ots submit 759` | `ots/759.pending.json` | checkpoint 759's root was submitted to the OpenTimestamps calendars; awaiting a Bitcoin block |
-| `ots anchor 759` | `ots/759.ots` | the proof matured — 759's root is now anchored in Bitcoin (the block height is recorded in the `ots/759.json` sidecar) |
-| `ots sidecar 759` | `ots/759.json` | the self-contained sidecar for that proof (signed STH + block height) |
-| `ots latest 759` | `ots/latest.json` | the pointer to the newest matured proof moved to 759 |
-| `add entries 741-766` | `entries/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard |
-| `rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
-| `swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
-| `stats 2026-07-18` | `stats/2026-07-18.json` | the signed daily aggregates for that UTC day were published |
+| `🔏 add checkpoint 766` | `checkpoints/<YYYY-MM-DD>.ndjson` | a new Ed25519-signed tree head (STH) for `tree_size` 766 was appended — the substantive "a checkpoint was published" event |
+| `🧭 update latest 766` | `checkpoints/latest.json` | the pointer to the newest checkpoint moved to 766 (the file the verifier reads) |
+| `⏳ ots submit 759` | `ots/759.pending.json` | checkpoint 759's root was submitted to the OpenTimestamps calendars; awaiting a Bitcoin block |
+| `⚓ ots anchor 759` | `ots/759.ots` | the proof matured — 759's root is now anchored in Bitcoin (the block height is recorded in the `ots/759.json` sidecar) |
+| `⚓ ots sidecar 759` | `ots/759.json` | the self-contained sidecar for that proof (signed STH + block height) |
+| `🧭 ots latest 759` | `ots/latest.json` | the pointer to the newest matured proof moved to 759 |
+| `🌱 add entries 741-766` | `entries/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard |
+| `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
+| `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
+| `🔏 stats 2026-07-18` | `stats/2026-07-18.json` | the signed daily aggregates for that UTC day were published |
 
 `tree_size` is the cumulative number of log leaves — it only ever grows (between resets).
 
 **Commit messages are informational only.** The verifier never reads them: it
 recomputes everything from the file *contents* here plus the public API's
 `/log/*` endpoints. Read them to follow what the bot did; nothing depends on
-their wording.
+their wording — including the prefixes, which older commits (published before
+they were introduced) simply don't carry.
 
 **Why the numbers look out of order.** Checkpoint `tree_size` values jump by
 however many events landed in that hour (e.g. `742 → 754 → 759 → 766`), not by
