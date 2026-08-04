@@ -1,25 +1,21 @@
 # Web Reactions Log (staging)
 
-Public, append-only transparency log for the Web Reactions **staging**
-environment at `https://api-staging.webreactions.app`. This repository holds the
-signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, Software Heritage
-archival records, signed daily statistics, and the raw log entries themselves.
-Used with the open-source verifier, it lets anyone recompute the counters and
-confirm the signed history was not silently rewritten — a plain `git clone` of
-this repository is a complete, offline-verifiable copy of the log.
+> **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral —
+> read [Staging notes](#staging-notes) at the bottom before verifying.
+
+Public, append-only transparency log for Web Reactions counters. This repository
+holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors,
+Software Heritage archival records, signed daily statistics, and the raw log
+entries themselves. Used with the open-source
+verifier, it lets anyone recompute the counters and confirm the signed history
+was not silently rewritten — a plain `git clone` of this repository is a
+complete, offline-verifiable copy of the log.
 
 This log is paired with the open-source
 [`web-reactions-verifier`](https://github.com/khasky/web-reactions-verifier). This
 repository holds the published data; that repository holds the code that checks it.
 
-Unlike the production log
-([web-reactions-log](https://github.com/khasky/web-reactions-log)), this staging
-log is signed with its **own key** and is **reset to genesis weekly** together
-with the staging database, so its history is intentionally short-lived and
-**ephemeral** — see **Reset schedule** below. For anything durable, use the
-production log.
-
-If you only want to check the current staging log, start with **Verify** below.
+If you only want to check the current public log, start with **Verify** below.
 
 ## How verification works
 
@@ -170,7 +166,7 @@ The text after the prefix says what it did:
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
 | `🔏 stats 2026-07-18` | `stats/2026-07-18.json` | the signed daily aggregates for that UTC day were published |
 
-`tree_size` is the cumulative number of log leaves — it only ever grows (between resets).
+`tree_size` is the cumulative number of log leaves — it only ever grows.
 
 **Commit messages are informational only.** The verifier never reads them: it
 recomputes everything from the file *contents* here plus the public API's
@@ -195,28 +191,28 @@ third-party mirrors preserve the real history). Don't edit them by hand.
 
 ## Verify
 
-Staging is signed with its **own key**, which the verifier does not pin (it pins
-the production key), so every command below passes
-`--pubkey <published staging Ed25519 key>`.
+Set the coordinates of the deployment you are checking — every command below
+reuses them:
+
+```bash
+API=https://api-staging.webreactions.app
+REPO=https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main
+KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deployment
+```
 
 ### Fast check
 
+Use the open-source verifier:
+
 ```bash
-npx web-reactions-verify \
-  --api https://api-staging.webreactions.app \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
-  --pubkey <published staging Ed25519 key>
+npx web-reactions-verify --api $API --repo $REPO $KEY
 ```
 
 To also compare one live target's `/reactions/count` response to the recomputed
 fold, add `--target site/id`:
 
 ```bash
-npx web-reactions-verify \
-  --api https://api-staging.webreactions.app \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
-  --pubkey <published staging Ed25519 key> \
-  --target github/1
+npx web-reactions-verify --api $API --repo $REPO $KEY --target github/1
 ```
 
 ### Fully offline audit
@@ -227,9 +223,7 @@ under test comes from `checkpoints/latest.json` and every entry from the
 `entries/` shards:
 
 ```bash
-npx web-reactions-verify --entries repo \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
-  --pubkey <published staging Ed25519 key>
+npx web-reactions-verify --entries repo --repo $REPO $KEY
 ```
 
 ### Bitcoin anchor check
@@ -239,11 +233,7 @@ Bitcoin block. It is slower and can only pass after an OTS proof has matured, so
 it is separate from the fast check:
 
 ```bash
-npx web-reactions-verify \
-  --api https://api-staging.webreactions.app \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
-  --pubkey <published staging Ed25519 key> \
-  --ots
+npx web-reactions-verify --api $API --repo $REPO $KEY --ots
 ```
 
 ### From a checkout
@@ -254,16 +244,15 @@ The verifier lives in a separate public repository:
 git clone https://github.com/khasky/web-reactions-verifier
 cd web-reactions-verifier
 pnpm install
-node src/verify.mjs \
-  --api https://api-staging.webreactions.app \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
-  --pubkey <published staging Ed25519 key>
+node src/verify.mjs --api $API --repo $REPO $KEY
 ```
 
-The verifier pins the **production** key only, so `--pubkey` is required for every
-staging run above. Pass the Ed25519 key published with the staging deployment; it
-verifies this log and only this log. (The production log needs no `--pubkey` — its
-key is the one the tool pins.)
+The production public key lives in one authoritative place — pinned in the
+[verifier source](https://github.com/khasky/web-reactions-verifier/blob/main/src/verify.mjs)
+(and printed in that repository's README) — deliberately not restated here, so a
+copy can't silently drift from the one the tool actually checks against. Any
+other deployment — staging, a fork, a different signing key — is verified by
+passing `--pubkey <base64>`; that is what `KEY` above carries.
 
 With `--target github/1`, expected successful output looks like this. Without
 `--target`, the live `/reactions/count` comparison line is omitted.
@@ -337,22 +326,33 @@ verifiable log events.
 ## Administrators
 
 This repository holds only the published log data and its documentation — no
-scripts or tooling. Operator maintenance (the weekly reset to genesis, scaffolding
-a fresh empty layout after a reset) is performed by the backend automation and
-lands here as normal bot commits, visible in the commit history like everything else.
+scripts or tooling. Operator maintenance (resetting the log to genesis,
+scaffolding a fresh empty layout) is performed by the backend automation and
+lands here as normal bot commits, visible in the commit history like everything
+else.
 
 Force-pushing or rewriting history in this repo is itself the tamper signal —
 third-party mirrors (e.g. Software Heritage) preserve the real history.
 
-## Reset schedule
+## Staging notes
 
-This staging log — and the entire staging database behind
-`https://api-staging.webreactions.app` — is **fully reset to genesis every Monday
-(around 03:00 UTC)**, and on demand. Everything in this repository is therefore
-**ephemeral**: any checkpoints, proofs, or entries you see are wiped at the next
-reset and the log is rebuilt from scratch. For anything durable, use the
-production log at
+Everything above describes this repository exactly as it describes the
+production log — the two READMEs are kept identical. What differs is only this:
+this repository is the log of the Web Reactions **staging** deployment at
+`https://api-staging.webreactions.app`, not the production log at
 [web-reactions-log](https://github.com/khasky/web-reactions-log).
+
+- **Own signing key.** Staging checkpoints are signed with a separate Ed25519
+  key, which the verifier does not pin — it pins the production key. Every
+  verification run therefore needs `--pubkey`, which is what the `KEY` variable
+  at the top of **Verify** carries. The production log needs no `--pubkey`.
+- **Reset weekly.** This log, and the entire staging database behind it, is
+  **fully reset to genesis every Monday (around 03:00 UTC)**, and on demand. So
+  `tree_size` only ever grows *between* resets, and the daily `stats/` series
+  restarts with each one.
+- **Ephemeral by design.** Any checkpoint, proof, or entry here is wiped at the
+  next reset and the log is rebuilt from scratch. Nothing in this repository is
+  durable enough to cite or archive against — for that, use the production log.
 
 ## License
 
