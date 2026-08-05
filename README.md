@@ -195,7 +195,7 @@ Set the coordinates of the deployment you are checking — every command below
 reuses them:
 
 ```bash
-API=https://api-staging.webreactions.app
+API=https://api-staging.webemoji.app
 REPO=https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main
 KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deployment
 ```
@@ -339,7 +339,7 @@ third-party mirrors (e.g. Software Heritage) preserve the real history.
 Everything above describes this repository exactly as it describes the
 production log — the two READMEs are kept identical. What differs is only this:
 this repository is the log of the Webemoji **staging** deployment at
-`https://api-staging.webreactions.app`, not the production log at
+`https://api-staging.webemoji.app`, not the production log at
 [web-reactions-log](https://github.com/khasky/web-reactions-log).
 
 - **Own signing key.** Staging checkpoints are signed with a separate Ed25519
