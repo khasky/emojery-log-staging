@@ -12,7 +12,7 @@ was not silently rewritten — a plain `git clone` of this repository is a
 complete, offline-verifiable copy of the log.
 
 This log is paired with the open-source
-[`web-reactions-verifier`](https://github.com/khasky/web-reactions-verifier). This
+[`web-reactions-verifier`](https://github.com/khasky/webemoji-verifier). This
 repository holds the published data; that repository holds the code that checks it.
 
 If you only want to check the current public log, start with **Verify** below.
@@ -196,7 +196,7 @@ reuses them:
 
 ```bash
 API=https://api-staging.webemoji.app
-REPO=https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main
+REPO=https://raw.githubusercontent.com/khasky/webemoji-log-staging/main
 KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deployment
 ```
 
@@ -241,14 +241,14 @@ npx webemoji-verify --api $API --repo $REPO $KEY --ots
 The verifier lives in a separate public repository:
 
 ```
-git clone https://github.com/khasky/web-reactions-verifier
+git clone https://github.com/khasky/webemoji-verifier
 cd web-reactions-verifier
 pnpm install
 node src/verify.mjs --api $API --repo $REPO $KEY
 ```
 
 The production public key lives in one authoritative place — pinned in the
-[verifier source](https://github.com/khasky/web-reactions-verifier/blob/main/src/verify.mjs)
+[verifier source](https://github.com/khasky/webemoji-verifier/blob/main/src/verify.mjs)
 (and printed in that repository's README) — deliberately not restated here, so a
 copy can't silently drift from the one the tool actually checks against. Any
 other deployment — staging, a fork, a different signing key — is verified by
@@ -340,7 +340,7 @@ Everything above describes this repository exactly as it describes the
 production log — the two READMEs are kept identical. What differs is only this:
 this repository is the log of the Webemoji **staging** deployment at
 `https://api-staging.webemoji.app`, not the production log at
-[web-reactions-log](https://github.com/khasky/web-reactions-log).
+[web-reactions-log](https://github.com/khasky/webemoji-log).
 
 - **Own signing key.** Staging checkpoints are signed with a separate Ed25519
   key, which the verifier does not pin — it pins the production key. Every
