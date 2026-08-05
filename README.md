@@ -1,9 +1,9 @@
-# Web Reactions Log (staging)
+# Webemoji Log (staging)
 
 > **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral —
 > read [Staging notes](#staging-notes) at the bottom before verifying.
 
-Public, append-only transparency log for Web Reactions counters. This repository
+Public, append-only transparency log for Webemoji counters. This repository
 holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors,
 Software Heritage archival records, signed daily statistics, and the raw log
 entries themselves. Used with the open-source
@@ -19,7 +19,7 @@ If you only want to check the current public log, start with **Verify** below.
 
 ## How verification works
 
-Web Reactions serves raw log entries from the public API (`/log/entries`),
+Webemoji serves raw log entries from the public API (`/log/entries`),
 mirrors them into this repository, and publishes signed tree heads here:
 
 1. Each accepted counter-changing event is serialized as a log leaf.
@@ -338,7 +338,7 @@ third-party mirrors (e.g. Software Heritage) preserve the real history.
 
 Everything above describes this repository exactly as it describes the
 production log — the two READMEs are kept identical. What differs is only this:
-this repository is the log of the Web Reactions **staging** deployment at
+this repository is the log of the Webemoji **staging** deployment at
 `https://api-staging.webreactions.app`, not the production log at
 [web-reactions-log](https://github.com/khasky/web-reactions-log).
 
