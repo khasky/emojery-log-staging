@@ -1,0 +1,14 @@
+{
+  "v": 1,
+  "day": "2026-08-04",
+  "new_accounts": 47,
+  "votes": 426,
+  "unique_user_refs": 37,
+  "revokes": 12,
+  "epoch_continuity": {
+    "from_epoch": 687,
+    "to_epoch": 688,
+    "accounts": 0
+  },
+  "signature": "d88c7d3ea79afdf1abd433c668a3ebee250dacbbf24f4d139c1758b1da266858b4b3e7f2b5995ddc93f767cc7b4a0e6f59741655a96843aabcb03481d9d10f03"
+}
