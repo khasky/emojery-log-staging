@@ -150,6 +150,7 @@ separates proofs still waiting on Bitcoin (⏳) from proofs already anchored (�
 | ⏳ | timestamp proof requested, not yet confirmed |
 | ⚓ | timestamp proof confirmed |
 | 📚 | third-party mirror refreshed |
+| 🧹 | log wiped back to genesis |
 
 The text after the prefix says what it did:
 
@@ -165,8 +166,10 @@ The text after the prefix says what it did:
 | `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
 | `🔏 stats 2026-07-18` | `stats/2026-07-18.json` | the signed daily aggregates for that UTC day were published |
+| `🧹 reset to genesis` | every generated file removed | the weekly wipe (and any on-demand one) — checkpoints, proofs and entries from before it are gone and `tree_size` restarts at 0 |
 
-`tree_size` is the cumulative number of log leaves — it only ever grows.
+`tree_size` is the cumulative number of log leaves — it only ever grows between
+🧹 resets, which on this staging log happen weekly (see **Staging notes** below).
 
 **Commit messages are informational only.** The verifier never reads them: it
 recomputes everything from the file *contents* here plus the public API's
