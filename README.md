@@ -1,9 +1,9 @@
-# Webemoji Log (staging)
+# Emojery Log (staging)
 
 > **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral —
 > read [Staging notes](#staging-notes) at the bottom before verifying.
 
-Public, append-only transparency log for Webemoji counters. This repository
+Public, append-only transparency log for Emojery counters. This repository
 holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors,
 Software Heritage archival records, signed daily statistics, and the raw log
 entries themselves. Used with the open-source
@@ -12,14 +12,14 @@ was not silently rewritten — a plain `git clone` of this repository is a
 complete, offline-verifiable copy of the log.
 
 This log is paired with the open-source
-[`webemoji-verifier`](https://github.com/khasky/webemoji-verifier). This
+[`emojery-verifier`](https://github.com/khasky/emojery-verifier). This
 repository holds the published data; that repository holds the code that checks it.
 
 If you only want to check the current public log, start with **Verify** below.
 
 ## How verification works
 
-Webemoji serves raw log entries from the public API (`/log/entries`),
+Emojery serves raw log entries from the public API (`/log/entries`),
 mirrors them into this repository, and publishes signed tree heads here:
 
 1. Each accepted counter-changing event is serialized as a log leaf.
@@ -187,8 +187,8 @@ Set the coordinates of the deployment you are checking — every command below
 reuses them:
 
 ```bash
-API=https://api-staging.webemoji.app
-REPO=https://raw.githubusercontent.com/khasky/webemoji-log-staging/main
+API=https://api-staging.emojery.app
+REPO=https://raw.githubusercontent.com/khasky/emojery-log-staging/main
 KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deployment
 ```
 
@@ -197,14 +197,14 @@ KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deplo
 Use the open-source verifier:
 
 ```bash
-npx webemoji-verify --api $API --repo $REPO $KEY
+npx emojery-verify --api $API --repo $REPO $KEY
 ```
 
 To also compare one live target's `/reactions/count` response to the recomputed
 fold, add `--target site/id`:
 
 ```bash
-npx webemoji-verify --api $API --repo $REPO $KEY --target github/1
+npx emojery-verify --api $API --repo $REPO $KEY --target github/1
 ```
 
 ### Fully offline audit
@@ -215,7 +215,7 @@ under test comes from `checkpoints/latest.json` and every entry from the
 `entries/` shards:
 
 ```bash
-npx webemoji-verify --entries repo --repo $REPO $KEY
+npx emojery-verify --entries repo --repo $REPO $KEY
 ```
 
 ### Bitcoin anchor check
@@ -225,7 +225,7 @@ Bitcoin block. It is slower and can only pass after an OTS proof has matured, so
 it is separate from the fast check:
 
 ```bash
-npx webemoji-verify --api $API --repo $REPO $KEY --ots
+npx emojery-verify --api $API --repo $REPO $KEY --ots
 ```
 
 ### From a checkout
@@ -233,14 +233,14 @@ npx webemoji-verify --api $API --repo $REPO $KEY --ots
 The verifier lives in a separate public repository:
 
 ```
-git clone https://github.com/khasky/webemoji-verifier
-cd webemoji-verifier
+git clone https://github.com/khasky/emojery-verifier
+cd emojery-verifier
 pnpm install
 node src/verify.mjs --api $API --repo $REPO $KEY
 ```
 
 The production public key lives in one authoritative place — pinned in the
-[verifier source](https://github.com/khasky/webemoji-verifier/blob/main/src/verify.mjs)
+[verifier source](https://github.com/khasky/emojery-verifier/blob/main/src/verify.mjs)
 (and printed in that repository's README) — deliberately not restated here, so a
 copy can't silently drift from the one the tool actually checks against. Any
 other deployment — staging, a fork, a different signing key — is verified by
@@ -328,9 +328,9 @@ third-party mirrors (e.g. Software Heritage) preserve the real history.
 
 Everything above describes this repository exactly as it describes the
 production log — the two READMEs are kept identical. What differs is only this:
-this repository is the log of the Webemoji **staging** deployment at
-`https://api-staging.webemoji.app`, not the production log at
-[webemoji-log](https://github.com/khasky/webemoji-log).
+this repository is the log of the Emojery **staging** deployment at
+`https://api-staging.emojery.app`, not the production log at
+[emojery-log](https://github.com/khasky/emojery-log).
 
 - **Own signing key.** Staging checkpoints are signed with a separate Ed25519
   key, which the verifier does not pin — it pins the production key. Every
