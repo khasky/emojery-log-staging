@@ -1,12 +1,12 @@
 # Emojery Log (staging)
 
-> **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral — read [Staging notes](#staging-notes) at the bottom before verifying.
+> **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral. Read [Staging notes](#staging-notes) at the bottom.
 
-Public, append-only transparency log for Emojery counters. This repository holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, Software Heritage archival records, and the raw log entries themselves. Used with the open-source verifier, it lets anyone recompute the counters and confirm the signed history was not silently rewritten — a plain `git clone` of this repository is a complete, offline-verifiable copy of the log.
+Public, append-only transparency log for Emojery counters. This repository holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, Software Heritage archival records, and the raw log entries themselves. A plain `git clone` of it is a complete, offline-verifiable copy of the log.
 
-This log is paired with the open-source [`emojery-verifier`](https://github.com/khasky/emojery-verifier). This repository holds the published data; that repository holds the code that checks it.
+The code that checks it lives in the open-source [`emojery-verifier`](https://github.com/khasky/emojery-verifier): it recomputes the counters from the data published here and confirms the signed history was not silently changed.
 
-If you only want to check the current public log, start with **Verify** below.
+If you only want to check the current public log, start with [Verify](#verify) below.
 
 ## How verification works
 
@@ -26,7 +26,7 @@ Everything under `checkpoints/`, `ots/`, `entries/`, `rekor/` and `swh/` is writ
 **`checkpoints/` — signed tree heads (STHs)**
 
 - `latest.json` — the single newest checkpoint (`tree_size`, `root_hash`, `ts`, `signature`), pretty-printed. **Overwritten every checkpoint.** The O(1) entry point consumers and the verifier read first; also the git-published view that is compared against the live API to catch a split view.
-- `<YYYY-MM-DD>.ndjson` — the permanent **append-only archive**: one compact JSON line per checkpoint, one shard per UTC day — the browsable history of every STH ever signed. Today's shard is appended to and freezes once the day rolls over.
+- `<YYYY-MM-DD>.ndjson` — the permanent **append-only archive**, the browsable history of every STH ever signed: one compact JSON line per checkpoint, one shard per UTC day. Today's shard is appended to and freezes once the day rolls over.
 - `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
 
 The newest checkpoint appears in both `latest.json` and the current shard on purpose: a moving pointer plus an append-only archive.
@@ -45,7 +45,7 @@ Not every checkpoint gets its own OTS proof — only the newest not-yet-submitte
 
 **`entries/` — the raw log leaves, mirrored**
 
-- `<start>-<end>.ndjson` — raw log entries in fixed 10,000-leaf ranges (zero-padded, e.g. `000000000001-000000010000.ndjson`), published once a checkpoint covers them, so nothing here is ever newer than the latest checkpoint: a just-cast reaction appears only after the next checkpoint seals it. Appends are batched, so the shards also routinely trail that checkpoint by a few hundred leaves until the next batch lands — an offline audit therefore verifies the newest checkpoint the shards fully cover, and says which one. One JSON line per leaf, byte-for-byte the same object the public API serves at `/log/entries`. A closed range is immutable; only the newest one grows.
+- `<start>-<end>.ndjson` — raw log entries in fixed 10,000-leaf ranges (zero-padded, e.g. `000000000001-000000010000.ndjson`), published once a checkpoint covers them, so nothing here is ever newer than the latest checkpoint: a just-cast reaction appears only after the next checkpoint seals it. Appends are batched, so the shards also routinely trail that checkpoint by a few hundred leaves until the next batch lands, so an offline audit verifies the newest checkpoint the shards fully cover, and says which one. One JSON line per leaf, byte-for-byte the same object the public API serves at `/log/entries`. A closed range is immutable; only the newest one grows.
 - `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
 
 Because the leaves are mirrored here, a clone of this repository is a complete, independently archivable copy of the log, and the verifier can audit it **fully offline** (see Verify below). The API being unavailable, or serving something different, changes nothing about what this record proves.
@@ -62,7 +62,7 @@ Revocations are part of the same log: account erasure and other public correctio
 
 - `latest.json` — the coordinate of the most recent daily Software Heritage save attempt for this repo: `{origin, git_commit, swhid, revision_url, save_request_id, save_request_status, save_task_status, snapshot_swhid, requested_ts}`. **Rewritten once per day** whether or not that day's save request was accepted (the `save_request_*` / `snapshot_swhid` fields are null when it was throttled, but `git_commit` / `swhid` always pin the day's head); its git history here is the append-only record of every daily save attempt.
 
-Because this is a Git origin, the archived commit's SWHID is `swh:1:rev:<git_commit>` — SWHIDs are `sha1_git`, so the SWH revision hash *is* the git commit hash. That makes third-party preservation checkable rather than assumed: resolve `revision_url` (or the SWHID) against the Software Heritage API and confirm the archive holds this repo's history. The save runs asynchronously, so a just-published coordinate resolves once SWH completes the visit — the same "pending, then matures" shape as an OTS proof.
+Because this is a Git origin, the archived commit's SWHID is `swh:1:rev:<git_commit>` — SWHIDs are `sha1_git`, so the SWH revision hash *is* the git commit hash. That makes third-party preservation checkable rather than assumed: resolve `revision_url` (or the SWHID) against the Software Heritage API and confirm the archive holds this repo's history. The save runs asynchronously, so a just-published coordinate resolves once SWH completes the visit, the same "pending, then matures" shape as an OTS proof.
 
 ## Reading the commit history
 
@@ -119,7 +119,7 @@ Use the open-source verifier. It is run straight from its GitHub repository — 
 npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY
 ```
 
-To print the recomputed totals themselves — the numbers you can then publish without quoting us — add `--counters`:
+Add `--counters` to print the recomputed totals themselves, the numbers you can then publish without quoting us:
 
 ```bash
 npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY --counters
@@ -222,7 +222,7 @@ This does **not** prove that every reaction came from a unique human, or that th
 
 This repository holds only the published log data and its documentation, no scripts or tooling. The backend automation performs operator maintenance (resetting the log to genesis, scaffolding a fresh empty layout), and it lands here as normal bot commits, visible in the commit history like everything else.
 
-Force-pushing or rewriting history in this repo is itself the tamper signal — third-party mirrors (e.g. Software Heritage) preserve the real history.
+Force-pushing or rewriting history in this repo is itself the tamper signal, because third-party mirrors preserve the real history.
 
 ## Staging notes
 
