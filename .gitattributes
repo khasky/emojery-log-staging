@@ -1,0 +1,5 @@
+# The published log is byte-critical: pin text to LF so a Windows clone is
+# byte-identical to Linux, and keep the OpenTimestamps proofs binary so a line-ending
+# filter can never touch them. Outside the machine-written data dirs; safe to add.
+* text=auto eol=lf
+*.ots binary
