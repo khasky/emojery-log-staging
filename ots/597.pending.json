@@ -1,0 +1,15 @@
+{
+  "tree_size": "597",
+  "digest_hex": "b43a0f5e24fc4169edadb94a5a794718b11a05497c89ce1938feecf59dc8d7b6",
+  "calendars": [
+    {
+      "url": "https://alice.btc.calendar.opentimestamps.org",
+      "response_b64": "8Ai+8l3x+AxoYgjwELj0FaHvy7gs5DOXiuwIQvsI8CC62wvVoz91anC+nSnE3QCFrEKiEJsYt+AAQejbojD2MQjxIAIepozQkdIukLdczxbDbcxNtQoIyDoaAOtrFS4F7+U4CPEEapo0dfAIXxXCo9wmbjIAg9/jDS75DI4uLWh0dHBzOi8vYWxpY2UuYnRjLmNhbGVuZGFyLm9wZW50aW1lc3RhbXBzLm9yZw=="
+    },
+    {
+      "url": "https://bob.btc.calendar.opentimestamps.org",
+      "response_b64": "8Ah3c8eVvGReagjwEItwS6dwmn6Q4IkQ8t0cOn0I8SDvu6j4kzYEf2CWNvmOHL2x3t0QYlUMLJExJMzQeLgNlQjxBGqaNHXwCOR2fTvV78RHAIPf4w0u+QyOLCtodHRwczovL2JvYi5idGMuY2FsZW5kYXIub3BlbnRpbWVzdGFtcHMub3Jn"
+    }
+  ],
+  "submitted_at": 1788490869826
+}
