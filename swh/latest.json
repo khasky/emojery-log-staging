@@ -1,11 +1,11 @@
 {
   "origin": "https://github.com/khasky/emojery-log-staging",
-  "git_commit": "051e74e1fbdc14eaaee08c5d4c6334eb2bcf6be2",
-  "swhid": "swh:1:rev:051e74e1fbdc14eaaee08c5d4c6334eb2bcf6be2",
-  "revision_url": "https://archive.softwareheritage.org/api/1/revision/051e74e1fbdc14eaaee08c5d4c6334eb2bcf6be2/",
-  "save_request_id": 2473352,
+  "git_commit": "b7204b7fd4536ade01c61788398880a4805d5dad",
+  "swhid": "swh:1:rev:b7204b7fd4536ade01c61788398880a4805d5dad",
+  "revision_url": "https://archive.softwareheritage.org/api/1/revision/b7204b7fd4536ade01c61788398880a4805d5dad/",
+  "save_request_id": 2474921,
   "save_request_status": "accepted",
   "save_task_status": "pending",
   "snapshot_swhid": null,
-  "requested_ts": 1789269481829
+  "requested_ts": 1789355828657
 }
