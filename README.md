@@ -12,7 +12,7 @@ If you only want to check the current public log, start with [Verify](#verify) b
 
 Emojery serves raw log entries from the public API (`/log/entries`), mirrors them into this repository, and publishes signed tree heads here:
 
-1. Each accepted counter-changing event is serialized as a log leaf.
+1. Each accepted counter-changing event, and each identity event (an account enrollment, a per-epoch key issuance, a key registration), is serialized as a log leaf.
 2. The API periodically builds a Merkle tree over the leaves and signs the root as a checkpoint with Ed25519.
 3. This repository records those checkpoints in Git history and mirrors the checkpoint-covered raw entries as `entries/` shards; mature checkpoints are also anchored to Bitcoin through OpenTimestamps and to Sigstore Rekor.
 4. The verifier refetches the leaves (from the API or from the shards here), recomputes every leaf hash, the hash chain linking them and the Merkle root, checks the signed checkpoint and the whole checkpoint archive, then folds the log back into counters.
@@ -21,7 +21,7 @@ That means live counters are verifiable against the public log. A cached or serv
 
 ## What's here
 
-Everything under `checkpoints/`, `ots/`, `entries/`, `rekor/` and `swh/` is written by the anchoring bot. What each file is for:
+Everything under `checkpoints/`, `ots/`, `entries/`, `rekor/`, `swh/` and `jwks/` is written by the anchoring bot; `keys/` is published once by the operator when a key is created. What each file is for:
 
 **`checkpoints/` — signed tree heads (STHs)**
 
@@ -50,9 +50,18 @@ Not every checkpoint gets its own OTS proof — only the newest not-yet-submitte
 
 Because the leaves are mirrored here, a clone of this repository is a complete, independently archivable copy of the log, and the verifier can audit it **fully offline** (see Verify below). The API being unavailable, or serving something different, changes nothing about what this record proves.
 
-Each leaf is pseudonymous by design. The `user_ref` field is a rotating per-epoch pseudonym, not your account, email, or any stable identifier. It changes every epoch and cannot be linked across epochs or back to a person, so mirroring the full log here exposes activity, never identities.
+Each leaf is pseudonymous by design. For a signed reaction the `user_ref` field is the SHA-256 of a per-epoch client key: the extension mints a fresh key every epoch, the operator blind-signs it (so the log shows the key was issued to an enrolled account without showing which one), and the reaction carries the key's signature. For a reaction from an older client it is a rotating per-epoch pseudonym. Either way it is not your account, email, or any stable identifier: it changes every epoch and cannot be linked across epochs or back to a person, so mirroring the full log here exposes activity, never identities.
 
 Revocations are part of the same log: account erasure and other public corrections are append-only `op=4` leaves, exposed at `/log/revocations` and present in the shards. The verifier checks that endpoint against the actual `op=4` leaves covered by the signed root anchored here.
+
+**`keys/` — the operator's public identity keys**
+
+- `blind-rsa-v1.json` — the RSA public key (SPKI) under which per-epoch client keys are blind-signed; the verifier pins it.
+- `enroll-v1.vk` and `enroll-v1.json` — the verification key of the enrollment circuit (`enroll-v1`), its SHA-256, the `bb` version that produced it, the `salt_commitment` and the public-input layout. Rotating any of these is a genesis reset.
+
+**`jwks/` — archived provider signing keys**
+
+- `<provider>/<kid>.json` — the OpenID provider's public key that signed the token behind an enrollment leaf, archived the first time the key is seen so an old proof stays checkable after the provider rotates keys.
 
 **`rekor/` — Sigstore Rekor anchors**
 
@@ -91,7 +100,9 @@ The text after the prefix says what it did:
 | `🌱 add entries 741-766` | `entries/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard |
 | `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
-| `🧹 reset to genesis` | every generated file removed | the weekly wipe (and any on-demand one) — checkpoints, proofs and entries from before it are gone and `tree_size` restarts at 0 |
+| `🪪 add jwks google/abc123` | `jwks/google/abc123.json` | a provider signing key was archived the first time an enrollment used it |
+| `🔑 publish key blind-rsa-v1` | `keys/…` | the operator published a public key or verification key; an operator action, like a reset |
+| `🧹 reset to genesis` | every generated file removed (`keys/` and `jwks/` survive) | the weekly wipe (and any on-demand one) — checkpoints, proofs and entries from before it are gone and `tree_size` restarts at 0 |
 
 `tree_size` is the cumulative number of log leaves — it only ever grows between 🧹 resets, which on this staging log happen weekly (see **Staging notes** below).
 
@@ -199,6 +210,9 @@ The log records counter-changing events, not just final state:
 - `op=2` — a reaction was changed; the leaf records both the new reaction and the previous one.
 - `op=3` — a reaction was removed by the user.
 - `op=4` — a revocation tombstone: a later public leaf that reverses an earlier `op=1`, `op=2`, or `op=3` leaf.
+- `op=5` — an enrollment: a zero-knowledge proof that an OpenID provider (Google, Apple, Microsoft, Facebook, LinkedIn, Discord, Twitch or Slack) signed a token for this account, reduced to a `nullifier` that never reveals the provider's user id.
+- `op=6` — a key issuance: the enrolled account identified by `nullifier` received one blind-signed per-epoch key (at most 3 per epoch).
+- `op=7` — a key registration: a per-epoch public key with the operator's blind signature; every signed reaction points at one of these.
 
 So a normal user "unreact" is `op=3`, not a tombstone. Tombstones are for append-only corrections such as account erasure or other public reversals. The original leaf stays in the log; the `op=4` leaf points at it with `revoke_seq`, and the verifier applies the inverse effect when recomputing counters.
 
@@ -214,9 +228,10 @@ The verifier checks integrity of the public counter history:
 - the revocation endpoint matches the actual `op=4` leaves in the log;
 - the counters recomputed from the log are printed on request (`--counters`), so the totals can be republished by whoever ran the check;
 - the checkpoint's Sigstore Rekor entry holds exactly its signed bytes (checked by default; `--no-rekor` to skip);
-- with `--ots`, a matured checkpoint root is anchored in Bitcoin.
+- with `--ots`, a matured checkpoint root is anchored in Bitcoin;
+- every signed reaction carries a valid signature by a registered per-epoch key, every registered key carries the operator's valid blind signature, no epoch has more registered keys than issuances, every issuance cites an earlier enrollment (at most 3 per account per epoch), and every enrollment proof verifies against the pinned circuit key and the archived provider key (`--no-proofs` to skip the last one).
 
-This does **not** prove that every reaction came from a unique human, or that the anti-abuse policy is perfect. It proves that the published counters match the public append-only log and that changes/removals/revocations are represented as verifiable log events.
+This does **not** prove that every reaction came from a unique human, or that the anti-abuse policy is perfect. It proves that the published counters match the public append-only log, that changes/removals/revocations are represented as verifiable log events, and that every signed reaction traces to an account opened with a real OpenID sign-in, so padding the counters would take real provider accounts and would be visible here.
 
 ## Administrators
 
