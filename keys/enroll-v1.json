@@ -2,7 +2,7 @@
   "circuit": "enroll-v1",
   "bb_version": "5.2.0",
   "nargo_version": "1.0.0-rc.1",
-  "vk_sha256": "",
+  "vk_sha256": "fdb551a27a6f13a18a60c668a5dfd4ea59cf23bde136827c73b7a34676d15e72",
   "salt_commitment": "7d68320622d41287d5c9fa0cf5352c0057112c9c5ebf15479356801f69aa46d1",
   "public_inputs": "modulus_limbs[18] redc_limbs[18] iss.storage[96] iss.len aud.storage[128] aud.len nullifier[32] salt_commitment[32]"
 }
