@@ -100,7 +100,7 @@ The text after the prefix says what it did:
 | `🌱 add entries 741-766` | `entries/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard |
 | `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
-| `🪪 add jwks google/abc123` | `jwks/google/abc123.json` | a provider signing key was archived the first time an enrollment used it |
+| `🔐 add jwks google/abc123` | `jwks/google/abc123.json` | a provider signing key was archived the first time an enrollment used it |
 | `🔑 publish key blind-rsa-v1` | `keys/…` | the operator published a public key or verification key; an operator action, like a reset |
 | `🧹 reset to genesis` | every generated file removed (`keys/` and `jwks/` survive) | the weekly wipe (and any on-demand one) — checkpoints, proofs and entries from before it are gone and `tree_size` restarts at 0 |
 
