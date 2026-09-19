@@ -2,7 +2,7 @@
 
 > **Staging deployment.** Own signing key, reset to genesis weekly, ephemeral. Read [Staging notes](#staging-notes) at the bottom.
 
-Public, append-only transparency log for Emojery counters. This repository holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, Software Heritage archival records, and the raw log entries themselves. A plain `git clone` of it is a complete, offline-verifiable copy of the log.
+Public, append-only transparency log for Emojery counters. This repository holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, Software Heritage archival records, and a manifest naming the raw log entries by digest. The entries themselves are served from object storage the manifest points at, so a `git clone` plus that one host is a complete, offline-verifiable copy of the log.
 
 The code that checks it lives in the open-source [`emojery-verifier`](https://github.com/khasky/emojery-verifier): it recomputes the counters from the data published here and confirms the signed history was not silently changed.
 
@@ -10,12 +10,12 @@ If you only want to check the current public log, start with [Verify](#verify) b
 
 ## How verification works
 
-Emojery serves raw log entries from the public API (`/log/entries`), mirrors them into this repository, and publishes signed tree heads here:
+Emojery serves raw log entries from the public API (`/log/entries`), mirrors them where this repository commits to their digests, and publishes signed tree heads here:
 
 1. Each accepted counter-changing event, and each identity event (an account enrollment, a per-epoch key issuance, a key registration), is serialized as a log leaf.
 2. The API periodically builds a Merkle tree over the leaves and signs the root as a checkpoint with Ed25519.
-3. This repository records those checkpoints in Git history and mirrors the checkpoint-covered raw entries as `entries/` shards; mature checkpoints are also anchored to Bitcoin through OpenTimestamps and to Sigstore Rekor.
-4. The verifier refetches the leaves (from the API or from the shards here), recomputes every leaf hash, the hash chain linking them and the Merkle root, checks the signed checkpoint and the whole checkpoint archive, then folds the log back into counters.
+3. This repository records those checkpoints in Git history and, for the checkpoint-covered entries, a manifest line per shard naming its range, its length and its SHA-256; the shard bodies are served from the host `entries/mirrors.json` names. Mature checkpoints are also anchored to Bitcoin through OpenTimestamps and to Sigstore Rekor.
+4. The verifier refetches the leaves (from the API, or from the shards the manifest names), recomputes every leaf hash, the hash chain linking them and the Merkle root, checks the signed checkpoint and the whole checkpoint archive, then folds the log back into counters. A shard admitted by digest is the shard this repository committed to, whichever host served it.
 
 That means live counters are verifiable against the public log. A cached or served counter that does not match the fold of the signed log is detectable.
 
@@ -43,12 +43,17 @@ A checkpoint's root is submitted to the OTS calendars, then matured into a proof
 
 Not every checkpoint gets its own OTS proof — only the newest not-yet-submitted one each time submit runs; the rest ride a consistency proof to an anchored one.
 
-**`entries/` — the raw log leaves, mirrored**
+**`entries/` — where the raw log leaves are, and what they must hash to**
 
-- `<start>-<end>.ndjson` — raw log entries in fixed 10,000-leaf ranges (zero-padded, e.g. `000000000001-000000010000.ndjson`), published once a checkpoint covers them, so nothing here is ever newer than the latest checkpoint: a just-cast reaction appears only after the next checkpoint seals it. Appends are batched, so the shards also routinely trail that checkpoint by a few hundred leaves until the next batch lands, so an offline audit verifies the newest checkpoint the shards fully cover, and says which one. One JSON line per leaf, byte-for-byte the same object the public API serves at `/log/entries`. A closed range is immutable; only the newest one grows.
+The leaves are not stored in Git. A log of any size outgrows a repository, and the bodies are the bulk of it; what this repository keeps is the commitment to them, which is the part that has to be tamper-evident.
+
+- `manifest/<start>-<end>.ndjson` — one line per shard: its first and last leaf, how many leaves, how many bytes, and the SHA-256 of the body. Published once a checkpoint covers the leaves, so nothing named here is ever newer than the latest checkpoint: a just-cast reaction appears only after the next checkpoint seals it. Appends are batched, so the manifest also routinely trails that checkpoint by a few hundred leaves until the next batch lands, and an offline audit verifies the newest checkpoint the manifest fully covers and says which one.
+- `mirrors.json` — the host the shard bodies are served from. Anyone may keep a copy and publish their own file naming it; the digests above are what decides whether a copy is the real one, not the host it came from.
+- Shard bodies, at that host, as `<start>-<end>.ndjson` in fixed 10,000-leaf ranges (zero-padded, e.g. `000000000001-000000010000.ndjson`). One JSON line per leaf, byte-for-byte the same object the public API serves at `/log/entries`. A closed range is immutable; only the newest one grows.
+- Enrolment proofs, at the same host, as `proofs/<first two hex>/<sha256>.bin`. A proof is 14 KB and an ENROLL leaf names it by digest, so the leaf stays small and the body is fetched only by an audit that checks proofs.
 - `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
 
-Because the leaves are mirrored here, a clone of this repository is a complete, independently archivable copy of the log, and the verifier can audit it **fully offline** (see Verify below). The API being unavailable, or serving something different, changes nothing about what this record proves.
+Because this repository commits to every leaf by digest, a clone of it plus the bodies from any host that serves them is a complete, independently archivable copy of the log, and the verifier can audit it **fully offline** (see Verify below). The API being unavailable, or serving something different, changes nothing about what this record proves - and neither does the mirror, since a body is admitted only if it hashes to what is committed here.
 
 Each leaf is pseudonymous by design. For a signed reaction the `user_ref` field is the SHA-256 of a per-epoch client key: the extension mints a fresh key every epoch, the operator blind-signs it (so the log shows the key was issued to an enrolled account without showing which one), and the reaction carries the key's signature. For a reaction from an older client it is a rotating per-epoch pseudonym. Either way it is not your account, email, or any stable identifier: it changes every epoch and cannot be linked across epochs or back to a person, so mirroring the full log here exposes activity, never identities.
 
@@ -97,7 +102,8 @@ The text after the prefix says what it did:
 | `⚓ ots anchor 759` | `ots/759.ots` | the proof matured — 759's root is now anchored in Bitcoin (the block height is recorded in the `ots/759.json` sidecar) |
 | `⚓ ots sidecar 759` | `ots/759.json` | the self-contained sidecar for that proof (signed STH + block height) |
 | `🧭 ots latest 759` | `ots/latest.json` | the pointer to the newest matured proof moved to 759 |
-| `🌱 add entries 741-766` | `entries/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard |
+| `🌱 add entries 741-766` | `entries/manifest/<start>-<end>.ndjson` | leaves 741–766 (now covered by a checkpoint) were published, and the manifest line now names the shard holding them |
+| `🧭 update entries mirrors` | `entries/mirrors.json` | the host serving the shard bodies was named, or changed |
 | `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
 | `🔐 add jwks google/abc123` | `jwks/google/abc123.json` | a provider signing key was archived the first time an enrollment used it |
@@ -138,11 +144,13 @@ npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY --counters
 
 ### Fully offline audit
 
-The raw leaves are mirrored in this repository, so the whole audit can run against a clone or mirror without contacting the API at all — the checkpoint comes from `checkpoints/latest.json` and every entry from the `entries/` shards:
+The whole audit can run without contacting the API at all — the checkpoint comes from `checkpoints/latest.json`, and every entry from the shards `entries/manifest` names, admitted only if its bytes hash to the digest committed here:
 
 ```bash
-npx github:khasky/emojery-verifier --entries repo --repo $REPO $KEY
+npx github:khasky/emojery-verifier --entries manifest --repo $REPO $KEY
 ```
+
+Add `--entries-base <url>` to read the bodies from your own copy instead of the host `entries/mirrors.json` names. The digests decide, so a mirror is checked exactly as strictly as the original.
 
 Shard appends are batched, so when they trail the newest checkpoint the run audits the newest one they fully cover and names both it and the tip. That is a smaller audit, not a failing one.
 
