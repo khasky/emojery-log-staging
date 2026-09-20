@@ -107,6 +107,7 @@ The text after the prefix says what it did:
 | `⚓ ots sidecar 759` | `ots/759.json` | the self-contained sidecar for that proof (signed STH + block height) |
 | `🧭 ots latest 759` | `ots/latest.json` | the pointer to the newest matured proof moved to 759 |
 | `🌱 add entries 741-766` | `entries/manifest/<first leaf>.ndjson` | leaves 741–766 (now covered by a checkpoint) were published, and the manifest line now names the chunk holding them |
+| `⛔ update revocations` | `revocations/latest.json` | a tombstone was added or the list was rebuilt over a newer tree — the file is rewritten whole, and only when its contents change |
 | `🧭 update entries mirrors` | `entries/mirrors.json` | the host serving the chunk bodies was named, or changed |
 | `⚓ rekor anchor 766` | `rekor/766.json` | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID |
 | `📚 swh save a1b2c3d` | `swh/latest.json` | Software Heritage was asked to re-archive the repo; the record pins the archived commit `a1b2c3d` as `swh:1:rev:…` |
