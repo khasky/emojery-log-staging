@@ -49,7 +49,7 @@ The leaves are not stored in Git. A log of any size outgrows a repository, and t
 
 - `manifest/<first leaf>.ndjson` — one line per chunk: its first and last leaf, how many leaves, how many bytes, and the SHA-256 of the body. At most 1000 lines per file; the next file starts at the `to` of the last line of this one, so a reader walks the chain without listing a directory. Published once a checkpoint covers the leaves, so nothing named here is ever newer than the latest checkpoint: a just-cast reaction appears only after the next checkpoint seals it. Appends are batched, so the manifest also routinely trails that checkpoint by a few hundred leaves until the next batch lands, and an offline audit verifies the newest checkpoint the manifest fully covers and says which one.
 - `mirrors.json` — the host the chunk bodies are served from. Anyone may keep a copy and publish their own file naming it; the digests above are what decides whether a copy is the real one, not the host it came from.
-- Chunk bodies, at that host, as `<from>-<to>.ndjson` (zero-padded, e.g. `000000000001-000000000585.ndjson`), each holding the leaves one publish covered. Written once and never touched again. One JSON line per leaf, byte-for-byte the same object the public API serves at `/log/entries`. A closed range is immutable; only the newest one grows.
+- Chunk bodies, at that host, as `<from>-<to>.ndjson` (zero-padded, e.g. `000000000001-000000000585.ndjson`), each holding the leaves one publish covered. Written once and never touched again. One JSON line per leaf. A chunk is immutable the moment it is written; the next publish starts a new one.
 - Enrolment proofs, at the same host, as `proofs/<first two hex>/<sha256>.bin`. A proof is 14 KB and an ENROLL leaf names it by digest, so the leaf stays small and the body is fetched only by an audit that checks proofs.
 - `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
 
@@ -116,7 +116,7 @@ The text after the prefix says what it did:
 
 `tree_size` is the cumulative number of log leaves — it only ever grows between 🧹 resets, which on this staging log happen weekly (see **Staging notes** below).
 
-**Commit messages are informational only.** The verifier never reads them: it recomputes everything from the file *contents* here plus the public API's `/log/*` endpoints. Read them to follow what the bot did; nothing depends on their wording — including the prefixes, which older commits (published before they were introduced) don't carry.
+**Commit messages are informational only.** The verifier never reads them: it recomputes everything from the file *contents* here plus the chunk bodies they commit to. Read them to follow what the bot did; nothing depends on their wording — including the prefixes, which older commits (published before they were introduced) don't carry.
 
 **Why the numbers look out of order.** Checkpoint `tree_size` values jump by however many events landed in that hour (e.g. `742 → 754 → 759 → 766`), not by one. And an OTS submit always anchors the *newest* checkpoint not yet submitted (submits run right after each checkpoint), so several submits can walk newest to older (`766`, then `759`, …). Both are expected; most intermediate checkpoints never get their own OTS proof and are tied to an anchored one by consistency proofs instead.
 
@@ -124,46 +124,43 @@ The text after the prefix says what it did:
 
 ## Verify
 
-Set the coordinates of the deployment you are checking — every command below reuses them:
+Set the coordinates of the deployment you are checking - every command below reuses them:
 
 ```bash
-API=https://api-staging.emojery.app
 REPO=https://raw.githubusercontent.com/khasky/emojery-log-staging/main
 KEY="--pubkey <staging-ed25519-key-base64>"   # published with the staging deployment
 ```
 
-### Fast check
+There is no API to point at. The verifier reads published files and nothing else: the checkpoint from `checkpoints/latest.json`, the leaves from the chunks `entries/manifest` names, each admitted only if its bytes hash to the digest committed here. Whether the service is up, down, or answering differently changes nothing about what a run proves.
 
-Use the open-source verifier. It is run straight from its GitHub repository — there is no npm package, and a name that looks like one is not ours:
+### Full audit
 
-```bash
-npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY
-```
-
-Add `--counters` to print the recomputed totals themselves, the numbers you can then publish without quoting us:
+Use the open-source verifier. It is run straight from its GitHub repository - there is no npm package, and a name that looks like one is not ours:
 
 ```bash
-npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY --counters
+npx github:khasky/emojery-verifier --repo $REPO $KEY
 ```
 
-### Fully offline audit
-
-The whole audit runs against these files alone — the checkpoint comes from `checkpoints/latest.json`, and every entry from the chunks `entries/manifest` names, admitted only if its bytes hash to the digest committed here:
-
-```bash
-npx github:khasky/emojery-verifier --entries manifest --repo $REPO $KEY
-```
+That is the whole audit: every leaf rehashed, the hash chain replayed from genesis, the Merkle root recomputed and held against the signed checkpoint, the checkpoint archive replayed, the Rekor witness checked, the counters folded back out, and the identity invariants and enrolment proofs verified. It prints the recomputed totals as it goes - the numbers you can then publish without quoting us.
 
 Add `--entries-base <url>` to read the bodies from your own copy instead of the host `entries/mirrors.json` names. The digests decide, so a mirror is checked exactly as strictly as the original.
 
 A publish lands a tick behind the checkpoint that covers it, so the run audits the newest checkpoint the chunks fully cover and names both it and the tip. That is a smaller audit, not a failing one.
 
-### Bitcoin anchor check
+### Fast check
 
-`--ots` additionally verifies the newest matured OpenTimestamps proof against a Bitcoin block. It is slower and can only pass after an OTS proof has matured, so it is separate from the fast check:
+`--entries none` reads no leaves at all. It checks the signed checkpoints, their consistency proofs and the witnesses, which is seconds on a log of any size, and says plainly that the contents were not read:
 
 ```bash
-npx github:khasky/emojery-verifier --api $API --repo $REPO $KEY --ots
+npx github:khasky/emojery-verifier --repo $REPO $KEY --entries none
+```
+
+### Bitcoin anchor check
+
+`--ots` additionally verifies the newest matured OpenTimestamps proof against a Bitcoin block. It is slower and can only pass after an OTS proof has matured, so it is separate from the audit above:
+
+```bash
+npx github:khasky/emojery-verifier --repo $REPO $KEY --ots
 ```
 
 ### From a checkout
@@ -174,45 +171,67 @@ The verifier lives in a separate public repository:
 git clone https://github.com/khasky/emojery-verifier
 cd emojery-verifier
 pnpm install
-node src/verify.mjs --api $API --repo $REPO $KEY
+node src/verify.mjs --repo $REPO $KEY
 ```
 
-The production public key lives in one authoritative place: pinned in the [verifier source](https://github.com/khasky/emojery-verifier/blob/main/src/verify.mjs), and printed in that repository's README. It is deliberately not restated here, so a copy can't silently drift from the one the tool actually checks against. Any other deployment (staging, a fork, a different signing key) is verified by passing `--pubkey <base64>`, which is what `KEY` above carries.
+The production public key lives in one authoritative place: pinned in the [verifier source](https://github.com/khasky/emojery-verifier/blob/main/src/verify.mjs), and printed in that repository's README. It is deliberately not restated here, so a copy can't silently drift from the one the tool actually checks against. Any other deployment (staging, a fork, a different signing key) is verified by passing `--pubkey <base64>`, which is what `KEY` above carries. The identity pins beside it - the blind-signing key, the salt commitment, the admitted issuers and audiences - belong to that same deployment, so a run against any other needs `--blind-pubkey`, `--salt-commitment`, `--issuers` and `--audiences` too, and reports the checks it could not make as skipped rather than passed.
 
 Expected successful output looks like this:
 
-```bash
-checkpoint: tree_size=4233 ts=1787713255080
-PASS  checkpoint Ed25519 signature
-PASS  checkpoint is fresh (1.4h old, threshold 168h — a quiet log ages legitimately; tune --max-checkpoint-age-hours)
-PASS  GitHub anchor matches signed root (tree_size=4233)
-PASS  every recomputed leaf_hash matches the served leaf (0 mismatch)
-PASS  fetched all 4233 leaves (got 4233, source: api)
-PASS  recomputed Merkle root == checkpoint root_hash
-PASS  hash chain replays from genesis (4233 leaves, 0 break(s))
-PASS  checkpoint archive parses (17 STH line(s) in 17 shard(s))
-PASS  no two archived STHs disagree on one tree_size (0 conflict(s))
-PASS  every archived STH signature verifies (17 checked, 0 bad)
-PASS  archived STH timestamps are monotone in tree_size (0 regression(s))
-PASS  archive never exceeds the live tree (max archived 4233 <= 4233)
-PASS  the live checkpoint is present in the archive shards
-PASS  every archived root replays from today's leaves (17 checkpoint(s), 0 mismatch)
-PASS  rekor sidecar 4233 matches the archived checkpoint
-PASS  Rekor entry 108e9186e8c5… holds the STH bytes of checkpoint 4233
-PASS  Rekor entry carries our Ed25519 checkpoint signature
-PASS  Rekor entry public key is the published log key
-folded 920 (site,target,reaction) counters from 4233 events
-revocations: 115 tombstone(s)
-   revoke seq=518 -> revoke_seq=516 reason=erasure_self target=github/torvalds/linux
-   …
-PASS  revocations/latest.json matches the op=4 leaves in the log (115)
-PASS  structural invariants hold (0 violation(s))
-PASS  account wipes are complete (0 violation(s); grace 48h)
+```
+── Checkpoint ────────────────────────────────────────────────────────── 2 ✓
+   ✓  checkpoint Ed25519 signature
+   ✓  checkpoint is fresh (0.4h old, threshold 168h; a quiet log ages legitimately, tune --max-checkpoint-age-hours)
 
-RESULT: PASS
+── Leaves & Merkle ───────────────────────────────────────────────────── 4 ✓
+   ✓  every recomputed leaf_hash matches the served leaf (0 mismatch)
+   ✓  fetched all 576 leaves (got 576)
+   ✓  recomputed Merkle root == checkpoint root_hash
+   ✓  hash chain replays from genesis (576 leaves, 0 break(s))
+
+── Checkpoint archive ──────────────────────────────────────────── 7 ✓ · 1 ○
+   ✓  checkpoint archive parses (1 STH line(s) in 1 shard(s))
+   ✓  no two archived STHs disagree on one tree_size (0 conflict(s))
+   ✓  every archived STH signature verifies (1 checked, 0 bad)
+   ✓  archived STH timestamps are monotone in tree_size (0 regression(s))
+   ✓  archive never exceeds the live tree (max archived 576 <= 576)
+   ✓  the live checkpoint is present in the archive shards
+   ✓  every archived root replays from today's leaves (1 checkpoint(s), 0 mismatch)
+   ○  consistency chain (fewer than two archived checkpoints)
+
+── Independent witness ───────────────────────────────────────────────── 4 ✓
+   ✓  rekor sidecar 576 matches the archived checkpoint
+   ✓  Rekor entry 108e9186e8c5... holds the STH bytes of checkpoint 576
+   ✓  Rekor entry carries our Ed25519 checkpoint signature
+   ✓  Rekor entry public key is the published log key
+
+── Log semantics ───────────────────────────────────────────────── 3 ✓ · 1 ○
+folded 255 (site,target,reaction) counters from 576 events
+revocations: 0 tombstone(s)
+   ✓  revocations/latest.json matches the op=4 leaves in the log (0)
+   ✓  structural invariants hold (0 violation(s))
+   ✓  account wipes are complete (0 violation(s); grace 48h)
+   ○  served counts against the fold (no --counts-base)
+
+── Identity ──────────────────────────────────────────────────────────── 5 ✓
+identity: 74 enroll, 73 issue, 73 key leaf(s); 356 signed and 0 unsigned vote(s)
+   ✓  identity invariants hold (0 violation(s))
+   ✓  every signed vote verifies under its epoch key (356 checked, 0 bad)
+   ✓  every ISSUE leaf is signed by its enrolled account key (73 checked, 0 bad)
+   ✓  every KEY leaf carries a valid blind RSA-PSS signature (73 checked, 0 bad)
+   ✓  every ENROLL proof verifies under the pinned verification key (74 ENROLL proof(s), 0 bad)
+
+┌─ VERIFIED ───────────────────────────────────────────────────────────────┐
+│  RESULT     PASS   25 passed · 2 skipped                                 │
+│  tree size  576   root cb926d58c8...4f988f                               │
+│  log key    79Wp/Myyu7... (--pubkey)                                     │
+│  witnesses  Rekor 108e9186e8c5...                                        │
+│  sources    khasky/emojery-log-staging@main · manifest + chunk bodies    │
+│  elapsed    9.4s                                                         │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
-Exit code `0` means the verifier passed. Exit code `1` means the public entries, hash chain, signed checkpoint, GitHub anchor, checkpoint archive or revocation list did not match what the verifier recomputed. A mistyped flag is exit code `2` — no run silently checks less than you asked for.
+A `○` is a check that was skipped and says why: a flag it needed was not passed, or the log does not carry what it would check. Exit code `0` means the verifier passed. Exit code `1` means the published entries, hash chain, signed checkpoint, checkpoint archive or revocation list did not match what the verifier recomputed. A mistyped flag is exit code `2` - no run silently checks less than you asked for.
 
 ## Reactions, removals, and tombstones
 
@@ -237,11 +256,11 @@ The verifier checks integrity of the public counter history:
 - their published hash chain replays from genesis, so their order is pinned as well as their contents;
 - the root matches the checkpoint published in this repository;
 - every checkpoint ever archived here replays from today's leaves — the whole published history lies on one append-only line;
-- the revocation endpoint matches the actual `op=4` leaves in the log;
-- the counters recomputed from the log are printed on request (`--counters`), so the totals can be republished by whoever ran the check;
+- `revocations/latest.json` matches the actual `op=4` leaves in the log;
+- the counters recomputed from the log are printed as the run folds them, so the totals can be republished by whoever ran the check;
 - the checkpoint's Sigstore Rekor entry holds exactly its signed bytes (checked by default; `--no-rekor` to skip);
 - with `--ots`, a matured checkpoint root is anchored in Bitcoin;
-- every signed reaction carries a valid signature by a registered per-epoch key, every registered key carries the operator's valid blind signature, no epoch has more registered keys than issuances, every issuance cites an earlier enrollment (at most 3 per account per epoch), and every enrollment proof verifies against the pinned circuit key and the archived provider key (`--no-proofs` to skip the last one).
+- every signed reaction carries a valid signature by a registered per-epoch key, every registered key carries the operator's valid blind signature, no epoch has more registered keys than issuances, every issuance cites an earlier enrollment by the same account key and carries that key's signature (at most `--keys-per-account`, 10 by default, per account per epoch), and every enrollment proof verifies against the pinned circuit key and the archived provider key (`--no-proofs` to skip the last one).
 
 This does **not** prove that every reaction came from a unique human, or that the anti-abuse policy is perfect. It proves that the published counters match the public append-only log, that changes/removals/revocations are represented as verifiable log events, and that every signed reaction traces to an account opened with a real OpenID sign-in, so padding the counters would take real provider accounts and would be visible here.
 
