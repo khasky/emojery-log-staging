@@ -1,4 +1,27 @@
 {
-  "tree_size": "666",
-  "revocations": []
+  "tree_size": "996",
+  "revocations": [
+    {
+      "seq": "744",
+      "ts": 1789866720000,
+      "revoke_seq": "742",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "745",
+      "ts": 1789866720000,
+      "revoke_seq": "743",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    }
+  ]
 }
