@@ -1,4 +1,841 @@
 {
-  "tree_size": "576",
-  "revocations": []
+  "tree_size": "1017",
+  "revocations": [
+    {
+      "seq": "739",
+      "ts": 1789896060000,
+      "revoke_seq": "730",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101162882683850963"
+      }
+    },
+    {
+      "seq": "740",
+      "ts": 1789896060000,
+      "revoke_seq": "731",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdfxaCvFhP7"
+      }
+    },
+    {
+      "seq": "741",
+      "ts": 1789896060000,
+      "revoke_seq": "732",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "3tsRiow2TcA"
+      }
+    },
+    {
+      "seq": "742",
+      "ts": 1789896060000,
+      "revoke_seq": "733",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "743",
+      "ts": 1789896060000,
+      "revoke_seq": "734",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "744",
+      "ts": 1789896060000,
+      "revoke_seq": "735",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "745",
+      "ts": 1789896060000,
+      "revoke_seq": "736",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "photo:10117964356277811"
+      }
+    },
+    {
+      "seq": "746",
+      "ts": 1789896060000,
+      "revoke_seq": "737",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdbjGVtxRuo"
+      }
+    },
+    {
+      "seq": "747",
+      "ts": 1789896060000,
+      "revoke_seq": "738",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wkmx8a"
+      }
+    },
+    {
+      "seq": "764",
+      "ts": 1789896660000,
+      "revoke_seq": "755",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101389585800421662"
+      }
+    },
+    {
+      "seq": "765",
+      "ts": 1789896660000,
+      "revoke_seq": "756",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdgC5bAjSma"
+      }
+    },
+    {
+      "seq": "766",
+      "ts": 1789896660000,
+      "revoke_seq": "757",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "INZPkPRTemU"
+      }
+    },
+    {
+      "seq": "767",
+      "ts": 1789896660000,
+      "revoke_seq": "758",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "768",
+      "ts": 1789896660000,
+      "revoke_seq": "759",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "769",
+      "ts": 1789896660000,
+      "revoke_seq": "760",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "770",
+      "ts": 1789896660000,
+      "revoke_seq": "761",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "2151470555758385"
+      }
+    },
+    {
+      "seq": "771",
+      "ts": 1789896660000,
+      "revoke_seq": "762",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wkvyzk"
+      }
+    },
+    {
+      "seq": "772",
+      "ts": 1789896660000,
+      "revoke_seq": "763",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdeqeLmMNvP"
+      }
+    },
+    {
+      "seq": "789",
+      "ts": 1789897200000,
+      "revoke_seq": "780",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101427329285370174"
+      }
+    },
+    {
+      "seq": "790",
+      "ts": 1789897200000,
+      "revoke_seq": "781",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdfqiHliCL_"
+      }
+    },
+    {
+      "seq": "791",
+      "ts": 1789897200000,
+      "revoke_seq": "782",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "fceXSPSYRkw"
+      }
+    },
+    {
+      "seq": "792",
+      "ts": 1789897200000,
+      "revoke_seq": "783",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "793",
+      "ts": 1789897200000,
+      "revoke_seq": "784",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "794",
+      "ts": 1789897200000,
+      "revoke_seq": "785",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "795",
+      "ts": 1789897200000,
+      "revoke_seq": "786",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "photo:1556224993210931"
+      }
+    },
+    {
+      "seq": "796",
+      "ts": 1789897200000,
+      "revoke_seq": "787",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdbRxeKo_JU"
+      }
+    },
+    {
+      "seq": "797",
+      "ts": 1789897200000,
+      "revoke_seq": "788",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wkmltd"
+      }
+    },
+    {
+      "seq": "814",
+      "ts": 1789898040000,
+      "revoke_seq": "805",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101601873115681037"
+      }
+    },
+    {
+      "seq": "815",
+      "ts": 1789898040000,
+      "revoke_seq": "806",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "Ddd4EzNEwVx"
+      }
+    },
+    {
+      "seq": "816",
+      "ts": 1789898040000,
+      "revoke_seq": "807",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "5cVBhku4I-Q"
+      }
+    },
+    {
+      "seq": "817",
+      "ts": 1789898040000,
+      "revoke_seq": "808",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "818",
+      "ts": 1789898040000,
+      "revoke_seq": "809",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "819",
+      "ts": 1789898040000,
+      "revoke_seq": "810",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "820",
+      "ts": 1789898040000,
+      "revoke_seq": "811",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "photo:1556224993210931"
+      }
+    },
+    {
+      "seq": "821",
+      "ts": 1789898040000,
+      "revoke_seq": "812",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "Dc_T8P3EsgE"
+      }
+    },
+    {
+      "seq": "822",
+      "ts": 1789898040000,
+      "revoke_seq": "813",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wkf0o0"
+      }
+    },
+    {
+      "seq": "843",
+      "ts": 1789909260000,
+      "revoke_seq": "751",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wl9mgj"
+      }
+    },
+    {
+      "seq": "844",
+      "ts": 1789909260000,
+      "revoke_seq": "834",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101359692861861981"
+      }
+    },
+    {
+      "seq": "845",
+      "ts": 1789909260000,
+      "revoke_seq": "835",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdeX2ASDK_a"
+      }
+    },
+    {
+      "seq": "846",
+      "ts": 1789909260000,
+      "revoke_seq": "836",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "yuv4JgjmpOE"
+      }
+    },
+    {
+      "seq": "847",
+      "ts": 1789909260000,
+      "revoke_seq": "837",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "848",
+      "ts": 1789909260000,
+      "revoke_seq": "838",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "849",
+      "ts": 1789909260000,
+      "revoke_seq": "839",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "850",
+      "ts": 1789909260000,
+      "revoke_seq": "840",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "photo:1556380493195381"
+      }
+    },
+    {
+      "seq": "851",
+      "ts": 1789909260000,
+      "revoke_seq": "841",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdgID0yIb37"
+      }
+    },
+    {
+      "seq": "852",
+      "ts": 1789909260000,
+      "revoke_seq": "842",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wld9x1"
+      }
+    },
+    {
+      "seq": "869",
+      "ts": 1789909680000,
+      "revoke_seq": "776",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdS4WOtO6sT"
+      }
+    },
+    {
+      "seq": "870",
+      "ts": 1789909680000,
+      "revoke_seq": "860",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101325529601200188"
+      }
+    },
+    {
+      "seq": "871",
+      "ts": 1789909680000,
+      "revoke_seq": "861",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "Ddgfz2ljIk4"
+      }
+    },
+    {
+      "seq": "872",
+      "ts": 1789909680000,
+      "revoke_seq": "862",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "x_y_2cjuHxU"
+      }
+    },
+    {
+      "seq": "873",
+      "ts": 1789909680000,
+      "revoke_seq": "863",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "874",
+      "ts": 1789909680000,
+      "revoke_seq": "864",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "875",
+      "ts": 1789909680000,
+      "revoke_seq": "865",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "876",
+      "ts": 1789909680000,
+      "revoke_seq": "866",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "29756829380575295"
+      }
+    },
+    {
+      "seq": "877",
+      "ts": 1789909680000,
+      "revoke_seq": "867",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdOz8dJjqpi"
+      }
+    },
+    {
+      "seq": "878",
+      "ts": 1789909680000,
+      "revoke_seq": "868",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wk0w0d"
+      }
+    },
+    {
+      "seq": "895",
+      "ts": 1789910100000,
+      "revoke_seq": "801",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "Ddf5_cSjAmL"
+      }
+    },
+    {
+      "seq": "896",
+      "ts": 1789910100000,
+      "revoke_seq": "886",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2101554875322781840"
+      }
+    },
+    {
+      "seq": "897",
+      "ts": 1789910100000,
+      "revoke_seq": "887",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdggHGpDFHZ"
+      }
+    },
+    {
+      "seq": "898",
+      "ts": 1789910100000,
+      "revoke_seq": "888",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "qe_gYNUaulQ"
+      }
+    },
+    {
+      "seq": "899",
+      "ts": 1789910100000,
+      "revoke_seq": "889",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "900",
+      "ts": 1789910100000,
+      "revoke_seq": "890",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "901",
+      "ts": 1789910100000,
+      "revoke_seq": "891",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "902",
+      "ts": 1789910100000,
+      "revoke_seq": "892",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "581378441236760"
+      }
+    },
+    {
+      "seq": "903",
+      "ts": 1789910100000,
+      "revoke_seq": "893",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "Ddf0mmZmyMK"
+      }
+    },
+    {
+      "seq": "904",
+      "ts": 1789910100000,
+      "revoke_seq": "894",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wktxpm"
+      }
+    },
+    {
+      "seq": "921",
+      "ts": 1789910640000,
+      "revoke_seq": "826",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "Ddf4ZtjjgB7"
+      }
+    },
+    {
+      "seq": "922",
+      "ts": 1789910640000,
+      "revoke_seq": "912",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "x",
+        "target_id": "2100984983603331354"
+      }
+    },
+    {
+      "seq": "923",
+      "ts": 1789910640000,
+      "revoke_seq": "913",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "threads",
+        "target_id": "DdgVMFNCvCk"
+      }
+    },
+    {
+      "seq": "924",
+      "ts": 1789910640000,
+      "revoke_seq": "914",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "youtube",
+        "target_id": "ChFQy2t16ts"
+      }
+    },
+    {
+      "seq": "925",
+      "ts": 1789910640000,
+      "revoke_seq": "915",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "github",
+        "target_id": "torvalds/linux"
+      }
+    },
+    {
+      "seq": "926",
+      "ts": 1789910640000,
+      "revoke_seq": "916",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "gitlab",
+        "target_id": "278964"
+      }
+    },
+    {
+      "seq": "927",
+      "ts": 1789910640000,
+      "revoke_seq": "917",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "amazon",
+        "target_id": "B0CXL5KT64"
+      }
+    },
+    {
+      "seq": "928",
+      "ts": 1789910640000,
+      "revoke_seq": "918",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "facebook",
+        "target_id": "photo:1556380493195381"
+      }
+    },
+    {
+      "seq": "929",
+      "ts": 1789910640000,
+      "revoke_seq": "919",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "instagram",
+        "target_id": "DdgmRYMIFKi"
+      }
+    },
+    {
+      "seq": "930",
+      "ts": 1789910640000,
+      "revoke_seq": "920",
+      "reason_code": "erasure_self",
+      "evidence_hash": null,
+      "target": {
+        "site": "reddit",
+        "target_id": "t3_1wg151i"
+      }
+    }
+  ]
 }
