@@ -242,8 +242,8 @@ The log records counter-changing events, not just final state:
 - `op=2` — a reaction was changed; the leaf records both the new reaction and the previous one.
 - `op=3` — a reaction was removed by the user.
 - `op=4` — a revocation tombstone: a later public leaf that reverses an earlier `op=1`, `op=2`, or `op=3` leaf.
-- `op=5` — an enrollment: a zero-knowledge proof that an OpenID provider (Google, Apple, Microsoft, Facebook, LinkedIn, Discord, Twitch or Slack) signed a token for this account, reduced to a `nullifier` that never reveals the provider's user id.
-- `op=6` — a key issuance: the enrolled account identified by `nullifier` received one blind-signed per-epoch key (at most 3 per epoch).
+- `op=5` — an enrollment: a zero-knowledge proof that an OpenID provider (Google, Apple, Microsoft or Twitch) signed a token for this account, reduced to a `nullifier` that never reveals the provider's user id.
+- `op=6` — a key issuance: the enrolled account identified by `nullifier` received one blind-signed per-epoch key (at most 10 per epoch by default).
 - `op=7` — a key registration: a per-epoch public key with the operator's blind signature; every signed reaction points at one of these.
 
 So a normal user "unreact" is `op=3`, not a tombstone. Tombstones are for append-only corrections such as account erasure or other public reversals. The original leaf stays in the log; the `op=4` leaf points at it with `revoke_seq`, and the verifier applies the inverse effect when recomputing counters.
